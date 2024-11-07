@@ -196,8 +196,6 @@ StreamKeeper incorporates a caching mechanism to enhance performance and user ex
 
 To ensure the application runs smoothly, comprehensive testing is implemented throughout the codebase. Using Jest and React Testing Library, each component undergoes rigorous testing to confirm that they function as intended. This process helps identify and rectify issues before deployment, ensuring a reliable user experience.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 
