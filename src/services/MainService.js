@@ -1,55 +1,86 @@
-import movieServiceInstance from './MovieService';
-import tvShowServiceInstance from './TvShowService';
-import personServiceInstance from './PersonService';
-import tmdbServiceInstance from './TmdbService';
-import Cache from '../cache/cache';
+import movieServiceInstance from './MovieService'; // Import movie service instance
+import tvShowServiceInstance from './TvShowService'; // Import TV show service instance
+import personServiceInstance from './PersonService'; // Import person service instance
+import tmdbServiceInstance from './TmdbService'; // Import TMDB service instance
+import Cache from '../cache/cache'; // Import custom cache class
 
 class MainService {
   constructor() {
+    // Initialize service instances
     this.tmdbService = tmdbServiceInstance;
     this.movieService = movieServiceInstance;
     this.tvShowService = tvShowServiceInstance;
     this.personService = personServiceInstance;
 
     // Create separate caches for each service
-    this.tmdbCache = new Cache();
-    this.movieCache = new Cache();
-    this.tvShowCache = new Cache();
-    this.personCache = new Cache();
+    this.tmdbCache = new Cache('TMDBCache'); // Cache for TMDB-related queries
+    this.movieCache = new Cache('MovieCache'); // Cache for movie-related queries
+    this.tvShowCache = new Cache('TvShowCache'); // Cache for TV show-related queries
+    this.personCache = new Cache('PersonCache'); // Cache for person-related queries
+  
+    // Locks to handle race conditions
+    this.locks = new Map(); // Store locks per command-query pair
   }
 
+  // Helper method to handle caching logic for any service function with race condition prevention
   async fetchWithCache(serviceFunction, cache, command, query) {
-    if (cache.has(command, query)) {
-      return cache.get(command, query);
+    const key = cache.generateKey(command, query); // Generate key using the Cache class method
+    
+    // Check if there is a lock for this key
+    if (this.locks.has(key)) {
+      // Wait for the existing lock to resolve
+      await this.locks.get(key);
     }
-    const response = await serviceFunction();
-    cache.set(command, query, response);
-    return response;
+
+    // Double-check to see if data is already cached after the lock is released
+    if (cache.has(command, query)) {
+      return cache.get(command, query); // Return cached data if available
+    }
+
+    // Create a new lock (a Promise that will resolve later)
+    let resolveLock;
+    const lockPromise = new Promise(resolve => {
+      resolveLock = resolve;
+    });
+    this.locks.set(key, lockPromise); // Set the lock
+
+    try {
+      // Fetch data using the service function
+      const response = await serviceFunction();
+      cache.set(command, query, response); // Cache the response
+      return response;
+    } finally {
+      // Release the lock
+      this.locks.delete(key);
+      resolveLock(); // Resolve the promise, allowing other calls to proceed
+    }
   }
 
-  // Health Checks
+
+
+  // Health Check Methods
   async checkHealthTMDBService() {
-    return this.tmdbService.checkHealth();
+    return this.tmdbService.checkHealth(); // Check health of TMDB service
   }
 
   async checkHealthMovieService() {
-    return this.movieService.checkHealth();
+    return this.movieService.checkHealth(); // Check health of movie service
   }
 
   async checkHealthTvShowService() {
-    return this.tvShowService.checkHealth();
+    return this.tvShowService.checkHealth(); // Check health of TV show service
   }
 
   async checkHealthPersonService() {
-    return this.personService.checkHealth();
+    return this.personService.checkHealth(); // Check health of person service
   }
 
   // TMDB API Key Validation
   async validateApiKey() {
-    return this.tmdbService.validateApiKey();
+    return this.tmdbService.validateApiKey(); // Validate TMDB API key
   }
 
-  // TMDB-specific Searches
+  // TMDB-Specific Searches
   async searchCollections(query) {
     return this.fetchWithCache(() => this.tmdbService.searchCollections(query), this.tmdbCache, 'searchCollections', query);
   }

@@ -1,31 +1,66 @@
 class Cache {
-    constructor() {
-      this.cache = new Map();
-    }
-  
-    generateKey(command, query) {
-      return `${command}_${JSON.stringify(query)}`;
-    }
-  
-    set(command, query, value) {
-      const key = this.generateKey(command, query);
-      this.cache.set(key, value);
-    }
-  
-    get(command, query) {
-      const key = this.generateKey(command, query);
-      return this.cache.get(key);
-    }
-  
-    has(command, query) {
-      const key = this.generateKey(command, query);
-      return this.cache.has(key);
-    }
-  
-    clear() {
-      this.cache.clear();
-    }
+  constructor(cacheName = 'DefaultCache', storageLocation = 'Memory') {
+    // Initialize an empty Map to serve as the cache storage.
+    this.cache = new Map();
+    this.cacheName = cacheName; // Name of the cache for logging purposes
+    this.storageLocation = storageLocation; // Location of cache (e.g., Memory, Disk, etc.)
+  }
+
+  // Generates a unique key based on the command and query object.
+  generateKey(command, query) {
+    // Convert all values in the query object to strings to ensure consistent key generation
+    const stringifiedQuery = JSON.stringify(query, (key, value) =>
+      typeof value === 'number' ? value.toString() : value
+    );
+    // Combines the command string with the stringified version of the query to create a unique key.
+    return `${command}_${stringifiedQuery}`;
   }
   
-  export default Cache;
-  
+
+  // Stores a value in the cache using a key generated from the command and query.
+  set(command, query, value) {
+    const key = this.generateKey(command, query);
+
+    // Check if the key already exists in the cache.
+    if (this.cache.has(key)) {
+      // Log an error if the key exists.
+      console.error(`Attempt to store a duplicate key.
+        Currently logged: ${JSON.stringify(this.cache.get(key))}
+        Trying to log: ${JSON.stringify(value)}`);
+    } else {
+      // Store the value in the cache under the generated key.
+      this.cache.set(key, value);
+
+      // Log details about the cache state
+      console.log(`Cached value for key: ${key}`);
+      console.log(`Cache Name: ${this.cacheName}`);
+      console.log(`Storage Location: ${this.storageLocation}`);
+      console.log(`Total Items in Cache: ${this.cache.size}`);
+      console.log('All Cached Items:', JSON.stringify([...this.cache.entries()], null, 2));
+    }
+
+    // Print a list of all keys in the cache after every new input
+    console.log('Current list of all keys in the cache:', [...this.cache.keys()]);
+  }
+
+  // Retrieves a value from the cache using a key generated from the command and query.
+  get(command, query) {
+    const key = this.generateKey(command, query);
+    // Return the cached value associated with the generated key, or undefined if not found.
+    return this.cache.get(key);
+  }
+
+  // Checks if a specific key, generated from the command and query, exists in the cache.
+  has(command, query) {
+    const key = this.generateKey(command, query);
+    // Return true if the key exists in the cache, otherwise false.
+    return this.cache.has(key);
+  }
+
+  // Clears all entries from the cache.
+  clear() {
+    this.cache.clear();
+  }
+}
+
+export default Cache; // Export the Cache class as the default export of the module.

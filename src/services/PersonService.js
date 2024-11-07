@@ -2,23 +2,24 @@ import axios from 'axios';
 
 class PersonService {
   constructor() {
+    // Create an Axios instance for API requests with the base URL set
     this.api = axios.create({
       baseURL: 'http://localhost:3004/api/person', // Update this to your actual backend URL
     });
   }
 
-  // Health Check
+  // Method to check the health status of the backend service
   async checkHealth() {
     try {
       const response = await this.api.get('/health');
       return response.data;
     } catch (error) {
       console.error('Error checking health status:', error);
-      throw error;
+      throw error; // Re-throw the error for further handling if needed
     }
   }
 
-  // Fetch popular persons
+  // Method to fetch a list of popular persons
   async getPopularPersons() {
     try {
       const response = await this.api.get('/popular');
@@ -29,8 +30,7 @@ class PersonService {
     }
   }
 
-
-  // Fetch person's details by ID
+  // Method to fetch details of a person by their ID
   async getPersonById(id) {
     try {
       const response = await this.api.get(`/${id}`);
@@ -41,7 +41,7 @@ class PersonService {
     }
   }
 
-  // Fetch person's movie credits by ID
+  // Method to fetch movie credits of a person by their ID
   async getPersonMovieCredits(id) {
     try {
       const response = await this.api.get(`/${id}/movie_credits`);
@@ -52,7 +52,7 @@ class PersonService {
     }
   }
 
-  // Fetch person's TV credits by ID
+  // Method to fetch TV credits of a person by their ID
   async getPersonTvCredits(id) {
     try {
       const response = await this.api.get(`/${id}/tv_credits`);
@@ -63,7 +63,7 @@ class PersonService {
     }
   }
 
-  // Fetch person's images by ID
+  // Method to fetch images of a person by their ID
   async getPersonImages(id) {
     try {
       const response = await this.api.get(`/${id}/images`);
@@ -74,7 +74,7 @@ class PersonService {
     }
   }
 
-  // Fetch external IDs for a person by ID
+  // Method to fetch external IDs (e.g., IMDB ID) for a person by their ID
   async getPersonExternalIds(id) {
     try {
       const response = await this.api.get(`/${id}/external_ids`);
@@ -86,6 +86,6 @@ class PersonService {
   }
 }
 
-// Export a single instance of the PersonService class
+// Export a single instance of the PersonService class for reuse across the application
 const personServiceInstance = new PersonService();
 export default personServiceInstance;

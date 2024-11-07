@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { Card, CardContent, Typography, Box, Rating } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MainService from '../../services/MainService';
-import PrefetchService from '../../services/PrefetchService'; // Adjust the import path to match your structure
+import PrefetchService from '../../services/PrefetchService';
 
-const prefetchService = new PrefetchService(); // Create an instance of the PrefetchService class outside the component
+const prefetchService = PrefetchService; // Singleton service instance
 
 function DisplayCardA({
   media,
-  minWidth,
+  minWidth = 275,
   maxWidth,
-  minHeight,
+  minHeight = 300,
   maxHeight,
   fixedWidth,
   fixedHeight,
@@ -19,9 +19,10 @@ function DisplayCardA({
   disableClick = false,
 }) {
   const navigate = useNavigate();
-  const [personImages, setPersonImages] = useState('');
+  const [personImages, setPersonImages] = useState(null);
 
   useEffect(() => {
+    // Fetch person images only if the media type is 'Person'
     if (media.mediaType === 'Person') {
       const fetchPersonImages = async () => {
         try {
@@ -42,9 +43,9 @@ function DisplayCardA({
   const handleCardClick = () => {
     if (disableClick) return;
 
-    if (onClick) {
-      onClick();
-    } else {
+    onClick?.();
+
+    if (!onClick) {
       switch (media.mediaType) {
         case 'Movie':
           navigate(`/movie/${media.id}`);
@@ -58,13 +59,12 @@ function DisplayCardA({
           break;
         default:
           navigate('/');
-          console.log(media.mediaType);
+          console.log('Unhandled media type:', media.mediaType);
       }
     }
   };
 
   const handleMouseEnter = () => {
-    // Call prefetch only for specific media types using the PrefetchService instance
     if (['Movie', 'TvShow', 'Person'].includes(media.mediaType)) {
       prefetchService.executePrefetch(media.mediaType, media.mediaType, media.id);
     }
@@ -88,51 +88,44 @@ function DisplayCardA({
 
   const knownFor =
     media.mediaType === 'Person' && media.knownFor
-      ? media.knownFor.length > 2
-        ? media.knownFor.slice(0, 2).map(item => item.name || item.title).join(', ')
-        : media.knownFor.map(item => item.name || item.title).join(', ')
+      ? media.knownFor.slice(0, 2).map(item => item.name || item.title).join(', ')
       : '';
 
-      const cardStyles = {
-        backgroundImage: `url(${backgroundUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        color: 'white',
-        minHeight: fixedHeight || minHeight || 300,
-        maxHeight: fixedHeight || maxHeight,
-        minWidth: fixedWidth || minWidth || 275,
-        maxWidth: fixedWidth || maxWidth,
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 2,
-        justifyContent: 'space-between',
-        position: 'relative',
-        cursor: disableClick ? 'default' : 'pointer',
-        transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
-        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', // Initial shadow
-        '&:hover': {
-          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.7)', // Increased and lightened shadow on hover
-          transform: 'scale(.95)',
-          
-        },
-      };
-      
-      
+  const cardStyles = {
+    backgroundImage: `url(${backgroundUrl})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    color: 'white',
+    minHeight: fixedHeight || minHeight,
+    maxHeight: fixedHeight || maxHeight,
+    minWidth: fixedWidth || minWidth,
+    maxWidth: fixedWidth || maxWidth,
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: 2,
+    justifyContent: 'space-between',
+    position: 'relative',
+    cursor: disableClick ? 'default' : 'pointer',
+    transition: 'box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+    '&:hover': {
+      boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.7)',
+      transform: 'scale(0.95)',
+    },
+  };
 
   return (
-    <Box sx={{ ...cardStyles }} onClick={handleCardClick} onMouseEnter={handleMouseEnter}>
+    <Box sx={cardStyles} onClick={handleCardClick} onMouseEnter={handleMouseEnter}>
       <Box
         sx={{
           position: 'absolute',
           top: 0,
           left: 0,
-          color: 'white',
           width: '100%',
           height: '100%',
           backgroundColor: 'rgba(0, 0, 0, 0.6)',
           zIndex: 1,
           borderRadius: 2,
-         
         }}
       />
       <Card
@@ -151,13 +144,15 @@ function DisplayCardA({
           <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
             {typeof name === 'string' ? name : 'Unnamed'}
           </Typography>
-          {media.mediaType === 'Person' ? (
-            <Typography sx={{ color: 'white', mb: 1.5 }}>Department</Typography>
-          ) : null}
+          {media.mediaType === 'Person' && (
+            <Typography sx={{ color: 'white', mb: 1.5 }}>
+              Department
+            </Typography>
+          )}
           <Typography variant="body2">{description}</Typography>
-          {media.mediaType === 'Person' && knownFor ? (
+          {media.mediaType === 'Person' && knownFor && (
             <Typography sx={{ color: 'white', mt: 1 }}>Known For: {knownFor}</Typography>
-          ) : null}
+          )}
         </CardContent>
       </Card>
       <Box
@@ -186,7 +181,7 @@ DisplayCardA.propTypes = {
     voteAverage: PropTypes.number,
     posterUrl: PropTypes.string,
     backdropUrl: PropTypes.string,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     knownFor: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,

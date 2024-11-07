@@ -2,26 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { Container, CircularProgress, Box, Typography, Tabs, Tab } from '@mui/material';
-import MainService from '../services/MainService';
-import MediaDisplayCarousel from '../components/MediaDisplayCarousel/MediaDisplayCarousel';
-import DisplayCardCarousel from '../components/DisplayCardCarousel/DisplayCardCarousel';
-import Movie from '../models/Movie';
-import TVShow from '../models/TvShow';
-import SearchBar from '../components/SearchBar/SearchBar';
-import { useNavigate } from 'react-router-dom';
+import MainService from '../services/MainService'; // Service for fetching data
+import MediaDisplayCarousel from '../components/MediaDisplayCarousel/MediaDisplayCarousel'; // Carousel component for media
+import DisplayCardCarousel from '../components/DisplayCardCarousel/DisplayCardCarousel'; // Card carousel component
+import Movie from '../models/Movie'; // Movie model
+import TVShow from '../models/TvShow'; // TVShow model
+import SearchBar from '../components/SearchBar/SearchBar'; // Search bar component
+import { useNavigate } from 'react-router-dom'; // For navigation
 
 const HomePage = () => {
   const [popularMovies, setPopularMovies] = useState([]);
   const [topRatedMovies, setTopRatedMovies] = useState([]);
   const [upcomingMovies, setUpcomingMovies] = useState([]);
-
   const [popularTVShows, setPopularTVShows] = useState([]);
   const [topRatedTVShows, setTopRatedTVShows] = useState([]);
   const [onAirTVShows, setOnAirTVShows] = useState([]);
-
   const [loading, setLoading] = useState(true);
   const [currentMovie, setCurrentMovie] = useState(null);
-
   const [movieTab, setMovieTab] = useState(0);
   const [tvTab, setTvTab] = useState(0);
 
@@ -49,13 +46,13 @@ const HomePage = () => {
     fetchInitialData();
   }, []);
 
-  const fetchMoviesData = async () => {
+  const fetchMoviesData = async (tabIndex) => {
     try {
-      if (movieTab === 1 && topRatedMovies.length === 0) {
+      if (tabIndex === 1 && topRatedMovies.length === 0) {
         const data = await MainService.getTopRatedMovies();
         const movieInstances = (data || []).map((movieData) => new Movie(movieData));
         setTopRatedMovies(movieInstances);
-      } else if (movieTab === 2 && upcomingMovies.length === 0) {
+      } else if (tabIndex === 2 && upcomingMovies.length === 0) {
         const data = await MainService.getUpcomingMovies();
         const movieInstances = (data || []).map((movieData) => new Movie(movieData));
         setUpcomingMovies(movieInstances);
@@ -65,29 +62,21 @@ const HomePage = () => {
     }
   };
 
-  const fetchTvData = async () => {
+  const fetchTvData = async (tabIndex) => {
     try {
-      if (tvTab === 1 && topRatedTVShows.length === 0) {
+      if (tabIndex === 1 && topRatedTVShows.length === 0) {
         const data = await MainService.getTopRatedTvShows();
-        const tVShowInstances = (data || []).map((tvShowData) => new TVShow(tvShowData)); // Corrected line here
+        const tVShowInstances = (data || []).map((tvShowData) => new TVShow(tvShowData));
         setTopRatedTVShows(tVShowInstances);
-      } else if (tvTab === 2 && onAirTVShows.length === 0) {
+      } else if (tabIndex === 2 && onAirTVShows.length === 0) {
         const data = await MainService.getOnTheAirTvShows();
-        const tVShowInstances = (data || []).map((tvShowData) => new TVShow(tvShowData)); // Corrected line here
+        const tVShowInstances = (data || []).map((tvShowData) => new TVShow(tvShowData));
         setOnAirTVShows(tVShowInstances);
       }
     } catch (error) {
       console.error('Error fetching TV shows data:', error);
     }
   };
-
-  useEffect(() => {
-    fetchMoviesData();
-  }, [movieTab]);
-
-  useEffect(() => {
-    fetchTvData();
-  }, [tvTab]);
 
   const handleMovieTabChange = (event, newValue) => {
     setMovieTab(newValue);
@@ -107,7 +96,6 @@ const HomePage = () => {
 
   const movieCarouselItems =
     movieTab === 0 ? popularMovies : movieTab === 1 ? topRatedMovies : upcomingMovies;
-
   const tVShowCarouselItems =
     tvTab === 0 ? popularTVShows : tvTab === 1 ? topRatedTVShows : onAirTVShows;
 
@@ -148,7 +136,6 @@ const HomePage = () => {
             </Box>
           </Box>
 
-          {/* Movies Section */}
           <Typography variant="h4" gutterBottom>
             Movies
           </Typography>
@@ -198,9 +185,9 @@ const HomePage = () => {
                 '& .MuiTabs-indicator': { backgroundColor: 'red' },
               }}
             >
-              <Tab label="Popular" />
-              <Tab label="Top Rated" />
-              <Tab label="Upcoming" />
+              <Tab label="Popular" onMouseEnter={() => fetchMoviesData(0)} />
+              <Tab label="Top Rated" onMouseEnter={() => fetchMoviesData(1)} />
+              <Tab label="Upcoming" onMouseEnter={() => fetchMoviesData(2)} />
             </Tabs>
           </Box>
           <Box mt={4}>
@@ -212,7 +199,6 @@ const HomePage = () => {
             />
           </Box>
 
-          {/* TV Shows Section */}
           <Typography variant="h4" gutterBottom>
             TV Shows
           </Typography>
@@ -262,9 +248,9 @@ const HomePage = () => {
                 '& .MuiTabs-indicator': { backgroundColor: 'red' },
               }}
             >
-              <Tab label="Popular" />
-              <Tab label="Top Rated" />
-              <Tab label="On The Air" />
+              <Tab label="Popular" onMouseEnter={() => fetchTvData(0)} />
+              <Tab label="Top Rated" onMouseEnter={() => fetchTvData(1)} />
+              <Tab label="On The Air" onMouseEnter={() => fetchTvData(2)} />
             </Tabs>
           </Box>
           <Box mt={4}>

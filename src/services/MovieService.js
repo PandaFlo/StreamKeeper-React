@@ -2,23 +2,24 @@ import axios from 'axios';
 
 class MovieService {
   constructor() {
+    // Create an Axios instance for making API requests with a base URL set
     this.api = axios.create({
       baseURL: 'http://localhost:3002/api/movies', // Update to your actual backend URL
     });
   }
 
-  // Health Check
+  // Method to check the health status of the backend service
   async checkHealth() {
     try {
       const response = await this.api.get(`/health`);
       return response.data;
     } catch (error) {
       console.error('Error checking health status:', error);
-      throw error;
+      throw error; // Re-throw the error for further handling if needed
     }
   }
 
-  // Fetch movie details by ID
+  // Method to fetch details of a movie by its ID
   async getMovieById(movieId) {
     try {
       const response = await this.api.get(`/${movieId}`);
@@ -29,7 +30,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie images by ID
+  // Method to fetch images related to a movie by its ID
   async getMovieImages(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/images`);
@@ -40,7 +41,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie credits by ID
+  // Method to fetch credits (cast and crew) of a movie by its ID
   async getMovieCredits(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/credits`);
@@ -51,7 +52,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie external IDs by ID
+  // Method to fetch external IDs (e.g., IMDB ID) for a movie by its ID
   async getMovieExternalIds(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/external_ids`);
@@ -62,7 +63,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie recommendations by ID
+  // Method to fetch movie recommendations based on a given movie ID
   async getMovieRecommendations(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/recommendations`);
@@ -73,7 +74,7 @@ class MovieService {
     }
   }
 
-  // Fetch similar movies by ID
+  // Method to fetch movies similar to a given movie by its ID
   async getSimilarMovies(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/similar`);
@@ -84,7 +85,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie videos by ID
+  // Method to fetch videos (e.g., trailers) related to a movie by its ID
   async getMovieVideos(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/videos`);
@@ -95,7 +96,7 @@ class MovieService {
     }
   }
 
-  // Fetch watch providers for a movie by ID
+  // Method to fetch watch providers for a movie by its ID
   async getMovieWatchProviders(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/watch/providers`);
@@ -106,7 +107,7 @@ class MovieService {
     }
   }
 
-  // Fetch movie reviews by ID
+  // Method to fetch user reviews for a movie by its ID
   async getMovieReviews(movieId) {
     try {
       const response = await this.api.get(`/${movieId}/reviews`);
@@ -117,7 +118,7 @@ class MovieService {
     }
   }
 
-  // Fetch popular movies
+  // Method to fetch a list of popular movies
   async getPopularMovies() {
     try {
       const response = await this.api.get(`/popular`);
@@ -128,7 +129,7 @@ class MovieService {
     }
   }
 
-  // Fetch now playing movies
+  // Method to fetch movies that are currently playing in theaters
   async getNowPlayingMovies() {
     try {
       const response = await this.api.get(`/now_playing`);
@@ -139,7 +140,7 @@ class MovieService {
     }
   }
 
-  // Fetch top-rated movies
+  // Method to fetch top-rated movies
   async getTopRatedMovies() {
     try {
       const response = await this.api.get(`/top_rated`);
@@ -150,7 +151,7 @@ class MovieService {
     }
   }
 
-  // Fetch upcoming movies
+  // Method to fetch upcoming movies
   async getUpcomingMovies() {
     try {
       const response = await this.api.get(`/upcoming`);
@@ -161,11 +162,11 @@ class MovieService {
     }
   }
 
-  // Search for movies
+  // Method to search for movies by a query string
   async searchMovies(query) {
     try {
       const response = await this.api.get(`/search`, {
-        params: { query },
+        params: { query }, // Pass the search query as a parameter
       });
       return response.data;
     } catch (error) {
@@ -175,6 +176,6 @@ class MovieService {
   }
 }
 
-// Export a single instance of the MovieService class
+// Export a single instance of the MovieService class for reuse across the application
 const movieServiceInstance = new MovieService();
 export default movieServiceInstance;

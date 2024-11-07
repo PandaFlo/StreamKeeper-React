@@ -1,53 +1,63 @@
 import MainService from './MainService'; // Adjust import based on your project structure
 
 class PrefetchService {
+  static instance;
+
   constructor() {
-    this.prefetchMap = new Map(); // Map to track completed prefetches
-    this.pendingFetches = new Map(); // Map to track pending fetches as promises
+    if (PrefetchService.instance) {
+      return PrefetchService.instance;
+    }
+
+    // Map to keep track of completed prefetches
+    this.prefetchMap = new Map(); 
+    // Map to track pending fetches with associated promises
+    this.pendingFetches = new Map(); 
+
+    PrefetchService.instance = this;
   }
 
+  // Generate a unique key to identify a prefetch operation
   generateMapKey(pagename, mediaType, id) {
-   return `${pagename}_${mediaType || 'none'}_${id || 'none'}`;
+    return `${pagename}_${mediaType || 'none'}_${id || 'none'}`;
   }
 
+  // Execute a prefetch operation based on page name and optional media type and ID
   async executePrefetch(pagename, mediaType = null, id = null) {
     const mapKey = this.generateMapKey(pagename, mediaType, id);
 
-    // If the prefetch is already completed, skip
+    // Skip if the prefetch is already completed
     if (this.prefetchMap.has(mapKey)) {
-      
       return;
     }
 
-    // If a fetch is already in progress for this key, wait for it to complete
+    // Wait if there is an existing pending fetch for this key
     if (this.pendingFetches.has(mapKey)) {
-      
       await this.pendingFetches.get(mapKey); // Wait for the pending fetch to resolve
       return;
     }
 
-    // Create a promise to track the prefetch operation
-    const fetchPromise = this.performPrefetch(pagename,  id)
+    // Create a promise to track the ongoing prefetch operation
+    const fetchPromise = this.performPrefetch(pagename, id)
       .then(() => {
         this.prefetchMap.set(mapKey, true); // Mark as completed
       })
       .catch(error => {
         console.error(`Error during prefetch for ${pagename}:`, error);
-        // Optional: consider whether you want to mark this as failed or retry
+        // Optional: handle retries or mark as failed if desired
       })
       .finally(() => {
-        this.pendingFetches.delete(mapKey); // Clean up pending fetch
+        this.pendingFetches.delete(mapKey); // Clean up pending fetch map
       });
 
-    // Store the promise in the pendingFetches map
+    // Store the promise in the pending fetches map
     this.pendingFetches.set(mapKey, fetchPromise);
 
     // Await the promise before returning
     await fetchPromise;
   }
 
-  async performPrefetch(pagename, id,) {
-    
+  // Perform prefetch operations based on the page type
+  async performPrefetch(pagename, id) {
     switch (pagename) {
       case 'Browse':
         await this.fetchBrowseData();
@@ -75,10 +85,9 @@ class PrefetchService {
       default:
         throw new Error(`Invalid pagename: ${pagename}`);
     }
-
-    
   }
 
+  // Fetch data for the 'Browse' page
   async fetchBrowseData() {
     await MainService.getTopRatedMovies();
     await MainService.getPopularMovies();
@@ -90,6 +99,7 @@ class PrefetchService {
     await MainService.getTopRatedTvShows();
   }
 
+  // Fetch data for the 'Home' page
   async fetchHomeData() {
     await MainService.getPopularMovies();
     await MainService.getPopularTvShows();
@@ -99,6 +109,7 @@ class PrefetchService {
     await MainService.getOnTheAirTvShows();
   }
 
+  // Fetch data for a specific person based on their ID
   async fetchPersonData(id) {
     await MainService.getPersonById(id);
     await MainService.getPersonImages(id);
@@ -106,23 +117,23 @@ class PrefetchService {
     await MainService.getPersonTvCredits(id);
   }
 
+  // Fetch data for a specific TV show based on its ID
   async fetchTvShowData(id) {
     await MainService.getTvShowById(id);
     await MainService.getTvShowRecommendations(id);
     await MainService.getSimilarTvShows(id);
+    await MainService.getTvShowWatchProviders(id);
   }
 
+  // Fetch data for a specific movie based on its ID
   async fetchMovieData(id) {
     await MainService.getMovieById(id);
     await MainService.getMovieRecommendations(id);
     await MainService.getSimilarMovies(id);
+    await MainService.getMovieWatchProviders(id);
   }
-
-
-
-
-
-
 }
 
-export default PrefetchService;
+const instance = new PrefetchService();
+Object.freeze(instance);
+export default instance;

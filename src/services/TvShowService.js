@@ -2,23 +2,24 @@ import axios from 'axios';
 
 class TvShowService {
   constructor() {
+    // Create an Axios instance with a base URL for API requests
     this.api = axios.create({
       baseURL: 'http://localhost:3003/api/tv', // Update this to your actual backend URL
     });
   }
 
-  // Health Check
+  // Health check method to verify service status
   async checkHealth() {
     try {
       const response = await this.api.get('/health');
       return response.data;
     } catch (error) {
       console.error('Error checking health status:', error);
-      throw error;
+      throw error; // Re-throw the error for further handling
     }
   }
 
-  // Fetch popular TV shows
+  // Method to fetch popular TV shows
   async getPopularTvShows() {
     try {
       const response = await this.api.get('/popular');
@@ -29,7 +30,7 @@ class TvShowService {
     }
   }
 
-  // Fetch latest TV show
+  // Method to fetch the latest TV show
   async getLatestTvShow() {
     try {
       const response = await this.api.get('/latest');
@@ -40,7 +41,7 @@ class TvShowService {
     }
   }
 
-  // Fetch TV shows airing today
+  // Method to fetch TV shows airing today
   async getAiringTodayTvShows() {
     try {
       const response = await this.api.get('/airing_today');
@@ -51,7 +52,7 @@ class TvShowService {
     }
   }
 
-  // Fetch TV shows currently on the air
+  // Method to fetch TV shows currently on the air
   async getOnTheAirTvShows() {
     try {
       const response = await this.api.get('/on_the_air');
@@ -62,7 +63,7 @@ class TvShowService {
     }
   }
 
-  // Fetch top-rated TV shows
+  // Method to fetch top-rated TV shows
   async getTopRatedTvShows() {
     try {
       const response = await this.api.get('/top_rated');
@@ -73,11 +74,11 @@ class TvShowService {
     }
   }
 
-  // Search for TV shows
+  // Method to search for TV shows by a query string
   async searchTvShows(query) {
     try {
       const response = await this.api.get('/search', {
-        params: { query },
+        params: { query }, // Pass the query as a parameter
       });
       return response.data;
     } catch (error) {
@@ -86,7 +87,7 @@ class TvShowService {
     }
   }
 
-  // Fetch TV show details by series ID
+  // Method to fetch TV show details by its series ID
   async getTvShowById(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}`);
@@ -97,7 +98,7 @@ class TvShowService {
     }
   }
 
-  // Fetch videos for a TV show by series ID
+  // Method to fetch videos related to a TV show by its series ID
   async getTvShowVideos(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/videos`);
@@ -108,7 +109,7 @@ class TvShowService {
     }
   }
 
-  // Fetch watch providers for a TV show by series ID
+  // Method to fetch watch providers for a TV show by its series ID
   async getTvShowWatchProviders(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/watch/providers`);
@@ -119,18 +120,18 @@ class TvShowService {
     }
   }
 
-  // Fetch images for a TV show by series ID
+  // Method to fetch images for a TV show by its series ID
   async getTvShowImages(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/images`);
-      return response.data.backdrops;
+      return response.data.backdrops; // Return only the backdrops
     } catch (error) {
       console.error(`Error fetching images for TV show with ID ${seriesId}:`, error);
       throw error;
     }
   }
 
-  // Fetch credits for a TV show by series ID
+  // Method to fetch credits (cast and crew) for a TV show by its series ID
   async getTvShowCredits(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/credits`);
@@ -144,7 +145,7 @@ class TvShowService {
     }
   }
 
-  // Fetch reviews for a TV show by series ID
+  // Method to fetch reviews for a TV show by its series ID
   async getTvShowReviews(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/reviews`);
@@ -155,7 +156,7 @@ class TvShowService {
     }
   }
 
-  // Fetch recommendations for a TV show by series ID
+  // Method to fetch recommendations for a TV show by its series ID
   async getTvShowRecommendations(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/recommendations`);
@@ -166,7 +167,7 @@ class TvShowService {
     }
   }
 
-  // Fetch similar TV shows by series ID
+  // Method to fetch similar TV shows by their series ID
   async getSimilarTvShows(seriesId) {
     try {
       const response = await this.api.get(`/${seriesId}/similar`);
@@ -178,6 +179,6 @@ class TvShowService {
   }
 }
 
-// Export a single instance of the TvShowService class
+// Export a single instance of the TvShowService class for reuse across the application
 const tvShowServiceInstance = new TvShowService();
 export default tvShowServiceInstance;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import MainService from "../services/MainService";
+import MainService from "../services/MainService"; // Import the main service for data fetching
 import {
   Container,
   Typography,
@@ -11,44 +11,46 @@ import {
   Chip,
   Rating,
 } from "@mui/material";
-import Movie from "../models/Movie";
-import ProviderList from "../components/ProviderList/ProviderList";
-import DisplayCardCarousel from "../components/DisplayCardCarousel/DisplayCardCarousel";
+import Movie from "../models/Movie"; // Import the Movie model
+import ProviderList from "../components/ProviderList/ProviderList"; // Component to display watch providers
+import DisplayCardCarousel from "../components/DisplayCardCarousel/DisplayCardCarousel"; // Carousel component for displaying recommendations and similar movies
 
 function MovieDetailPage() {
-  const { id } = useParams();
-  const [movie, setMovie] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [recommendations, setRecommendations] = useState([]);
-  const [similarMovies, setSimilarMovies] = useState([]);
+  const { id } = useParams(); // Retrieve the movie ID from the URL
+  const [movie, setMovie] = useState(null); // State to store movie details
+  const [loading, setLoading] = useState(true); // State to track loading status
+  const [errorMessage, setErrorMessage] = useState(""); // State to store error messages
+  const [recommendations, setRecommendations] = useState([]); // State for recommended movies
+  const [similarMovies, setSimilarMovies] = useState([]); // State for similar movies
 
-  const titleColor = "white";
-  const textColor = "#D3D3D3";
+  const titleColor = "white"; // Color for titles
+  const textColor = "#D3D3D3"; // Color for text
 
+  // Fetch movie details and related data when component mounts or when the movie ID changes
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        const data = await MainService.getMovieById(id);
-        const movieInstance = new Movie(data);
+        const data = await MainService.getMovieById(id); // Fetch movie details using the movie ID
+        const movieInstance = new Movie(data); // Create a new Movie instance
         setMovie(movieInstance);
       } catch (error) {
         console.error("Error fetching movie details:", error);
-        setErrorMessage("An error occurred while fetching the movie details.");
+        setErrorMessage("An error occurred while fetching the movie details."); // Set error message on failure
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading indicator
       }
     };
 
+    // Fetch recommendations and similar movies
     const fetchRecommendationsAndSimilarMovies = async () => {
       try {
-        const recommendationsData = await MainService.getMovieRecommendations(id);
+        const recommendationsData = await MainService.getMovieRecommendations(id); // Fetch movie recommendations
         const formattedRecommendations = (recommendationsData || []).map(
           (movieData) => new Movie(movieData)
         );
         setRecommendations(formattedRecommendations);
 
-        const similarMoviesData = await MainService.getSimilarMovies(id);
+        const similarMoviesData = await MainService.getSimilarMovies(id); // Fetch similar movies
         const formattedSimilarMovies = (similarMoviesData || []).map(
           (movieData) => new Movie(movieData)
         );
@@ -62,8 +64,9 @@ function MovieDetailPage() {
       fetchMovieDetails();
       fetchRecommendationsAndSimilarMovies();
     }
-  }, [id]);
+  }, [id]); // Run the effect whenever the movie ID changes
 
+  // Show a loading spinner while data is being fetched
   if (loading) {
     return (
       <Container style={{ marginTop: "20px", textAlign: "center" }}>
@@ -72,6 +75,7 @@ function MovieDetailPage() {
     );
   }
 
+  // Display an error message if an error occurred during data fetching
   if (errorMessage) {
     return (
       <Container style={{ marginTop: "20px" }}>
@@ -83,31 +87,35 @@ function MovieDetailPage() {
   return (
     <Container style={{ marginTop: "20px" }}>
       <Grid container spacing={4}>
+        {/* Left column: Movie poster and provider list */}
         <Grid item xs={12} md={4}>
           <Box>
             <img
-              src={movie?.posterUrl || "placeholder.jpg"}
+              src={movie?.posterUrl || "placeholder.jpg"} // Display movie poster or a placeholder image
               alt={movie?.title || "Movie Poster"}
               style={{ width: "100%", borderRadius: "8px" }}
             />
           </Box>
+          {/* Display watch providers */}
           <ProviderList mediaId={id} mediaType="movie" />
         </Grid>
 
+        {/* Right column: Movie details */}
         <Grid item xs={12} md={8}>
           <Typography variant="h4" gutterBottom style={{ color: titleColor }}>
             {movie?.title || "N/A"}{" "}
             <Typography variant="subtitle1" component="span" style={{ color: titleColor }}>
-              ({movie?.releaseDate ? movie.releaseDate.split("-")[0] : "Unknown"})
+              ({movie?.releaseDate ? movie.releaseDate.split("-")[0] : "Unknown"}) {/* Display release year */}
             </Typography>
           </Typography>
           <Typography variant="subtitle1" gutterBottom style={{ color: titleColor }}>
             Original Title: {movie?.originalTitle || "N/A"}
           </Typography>
           <Typography variant="body1" paragraph style={{ color: textColor }}>
-            {movie?.overview || "No overview available."}
+            {movie?.overview || "No overview available."} {/* Display movie overview */}
           </Typography>
 
+          {/* Display movie information in a grid */}
           <Box my={2}>
             <Typography variant="h6" style={{ color: titleColor }}>
               Movie Information
@@ -133,9 +141,10 @@ function MovieDetailPage() {
                 <Typography variant="body2" style={{ color: titleColor }}>
                   Vote Average:
                 </Typography>
+                {/* Display movie rating */}
                 <Rating
                   name="read-only"
-                  value={movie?.voteAverage / 2 || 0}
+                  value={movie?.voteAverage / 2 || 0} // Convert 10-point scale to 5-point scale for display
                   readOnly
                   precision={0.1}
                 />
@@ -154,6 +163,7 @@ function MovieDetailPage() {
             </Grid>
           </Box>
 
+          {/* Display genres if available */}
           {movie?.genreIds && movie.genreIds.length > 0 && (
             <Box my={2}>
               <Typography variant="h6" style={{ color: titleColor }}>Genres</Typography>
@@ -165,6 +175,7 @@ function MovieDetailPage() {
             </Box>
           )}
 
+          {/* Display backdrop image if available */}
           {movie?.backdropUrl && (
             <Box my={2}>
               <Typography variant="h6" style={{ color: titleColor }}>Backdrop</Typography>
@@ -182,6 +193,7 @@ function MovieDetailPage() {
         </Grid>
       </Grid>
 
+      {/* Display recommended movies if available */}
       {recommendations.length > 0 && (
         <Box my={4}>
           <Typography variant="h5" gutterBottom style={{ color: titleColor }}>
@@ -191,6 +203,7 @@ function MovieDetailPage() {
         </Box>
       )}
 
+      {/* Display similar movies if available */}
       {similarMovies.length > 0 && (
         <Box my={4}>
           <Typography variant="h5" gutterBottom style={{ color: titleColor }}>

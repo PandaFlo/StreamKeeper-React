@@ -3,16 +3,16 @@ import PropTypes from 'prop-types';
 import { Card, CardContent, CardMedia, Typography, Rating, Box, ButtonBase } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import MainService from '../../services/MainService';
-import PrefetchService from '../../services/PrefetchService'; // Adjust import path as necessary
+import PrefetchService from '../../services/PrefetchService';
 
-const prefetchService = new PrefetchService();
+const prefetchService = PrefetchService; // Singleton PrefetchService instance
 
 function DisplayCardB({
   media,
-  minWidth,
-  maxWidth,
-  minHeight,
-  maxHeight,
+  minWidth = 275,
+  maxWidth = '100%',
+  minHeight = 300,
+  maxHeight = 'auto',
   fixedWidth,
   fixedHeight,
   onClick,
@@ -24,12 +24,16 @@ function DisplayCardB({
   useEffect(() => {
     if (media.mediaType === 'Person') {
       const fetchPersonImage = async () => {
-        const imagesData = await MainService.getPersonImages(media.id);
-        setPersonImage(
-          imagesData.profiles?.length
-            ? `https://image.tmdb.org/t/p/w500${imagesData.profiles[0].file_path}`
-            : null
-        );
+        try {
+          const imagesData = await MainService.getPersonImages(media.id);
+          setPersonImage(
+            imagesData.profiles?.length
+              ? `https://image.tmdb.org/t/p/w500${imagesData.profiles[0].file_path}`
+              : null
+          );
+        } catch (error) {
+          console.error('Error fetching person image:', error);
+        }
       };
       fetchPersonImage();
     }
@@ -37,10 +41,8 @@ function DisplayCardB({
 
   const handleCardClick = () => {
     if (disableClick) return;
-
-    if (onClick) {
-      onClick();
-    } else {
+    onClick?.();
+    if (!onClick) {
       switch (media.mediaType) {
         case 'Movie':
           navigate(`/movie/${media.id}`);
@@ -82,27 +84,26 @@ function DisplayCardB({
       : '';
 
   const cardStyles = {
-    minWidth: fixedWidth || minWidth || 275,
-    maxWidth: fixedWidth || maxWidth || '100%',
-    minHeight: fixedHeight || minHeight || 300,
-    maxHeight: fixedHeight || maxHeight || 'auto',
+    minWidth: fixedWidth || minWidth,
+    maxWidth: fixedWidth || maxWidth,
+    minHeight: fixedHeight || minHeight,
+    maxHeight: fixedHeight || maxHeight,
     cursor: disableClick ? 'default' : 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    height: 'auto',
   };
 
   return (
     <Box
       onClick={handleCardClick}
-      onMouseEnter={handleCardHover} // Trigger prefetch on hover
-      disabled={disableClick}
+      onMouseEnter={handleCardHover}
       sx={{
         minWidth: cardStyles.minWidth,
         maxWidth: cardStyles.maxWidth,
         cursor: cardStyles.cursor,
         flexGrow: 1,
         position: 'relative',
+        '&:hover': {
+          boxShadow: disableClick ? 'none' : '0px 4px 12px rgba(0, 0, 0, 0.4)',
+        },
       }}
     >
       <ButtonBase
@@ -111,11 +112,7 @@ function DisplayCardB({
           height: '100%',
           borderRadius: 1,
           overflow: 'hidden',
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
           display: 'block',
-          '&:hover': {
-            boxShadow: disableClick ? 'none' : '0px 4px 12px rgba(0, 0, 0, 0.4)',
-          },
         }}
       >
         <Card
@@ -144,9 +141,7 @@ function DisplayCardB({
                 Known For: {knownFor}
               </Typography>
             )}
-            {/* Spacer to push the rating box to the bottom */}
             <Box sx={{ flexGrow: 1 }} />
-            {/* Seamlessly integrated rating box at the bottom */}
             {media.mediaType !== 'Person' && (
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mt: 1 }}>
                 <Rating value={rating / 2} precision={0.1} readOnly />
