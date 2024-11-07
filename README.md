@@ -200,6 +200,4 @@ To ensure the application runs smoothly, comprehensive testing is implemented th
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
 
-Feel free to further expand any sections or make adjustments based on your preferences or additional details about the project!
