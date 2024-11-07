@@ -91,13 +91,45 @@ const HomePage = () => {
   };
 
   const handleNavigate = (topic, mediaArray, fetchFunction) => {
-    navigate('/info', { state: { topic, mediaArray, fetchFunction } });
+    navigate(`/info/${topic}`, { state: { mediaArray, fetchFunction } });
   };
 
   const movieCarouselItems =
     movieTab === 0 ? popularMovies : movieTab === 1 ? topRatedMovies : upcomingMovies;
   const tVShowCarouselItems =
     tvTab === 0 ? popularTVShows : tvTab === 1 ? topRatedTVShows : onAirTVShows;
+
+  const handleMovieTabDoubleClick = (tabIndex) => {
+    const topic =
+      tabIndex === 0
+        ? 'Popular Movies'
+        : tabIndex === 1
+        ? 'Top Rated Movies'
+        : 'Upcoming Movies';
+    const fetchFunction =
+      tabIndex === 0
+        ? 'getPopularMovies'
+        : tabIndex === 1
+        ? 'getTopRatedMovies'
+        : 'getUpcomingMovies';
+    handleNavigate(topic, movieCarouselItems, fetchFunction);
+  };
+
+  const handleTvTabDoubleClick = (tabIndex) => {
+    const topic =
+      tabIndex === 0
+        ? 'Popular TV Shows'
+        : tabIndex === 1
+        ? 'Top Rated TV Shows'
+        : 'On The Air TV Shows';
+    const fetchFunction =
+      tabIndex === 0
+        ? 'getPopularTvShows'
+        : tabIndex === 1
+        ? 'getTopRatedTvShows'
+        : 'getOnTheAirTvShows';
+    handleNavigate(topic, tVShowCarouselItems, fetchFunction);
+  };
 
   return (
     <Container>
@@ -185,9 +217,21 @@ const HomePage = () => {
                 '& .MuiTabs-indicator': { backgroundColor: 'red' },
               }}
             >
-              <Tab label="Popular" onMouseEnter={() => fetchMoviesData(0)} />
-              <Tab label="Top Rated" onMouseEnter={() => fetchMoviesData(1)} />
-              <Tab label="Upcoming" onMouseEnter={() => fetchMoviesData(2)} />
+              <Tab
+                label="Popular"
+                onMouseEnter={() => fetchMoviesData(0)}
+                onDoubleClick={() => handleMovieTabDoubleClick(0)}
+              />
+              <Tab
+                label="Top Rated"
+                onMouseEnter={() => fetchMoviesData(1)}
+                onDoubleClick={() => handleMovieTabDoubleClick(1)}
+              />
+              <Tab
+                label="Upcoming"
+                onMouseEnter={() => fetchMoviesData(2)}
+                onDoubleClick={() => handleMovieTabDoubleClick(2)}
+              />
             </Tabs>
           </Box>
           <Box mt={4}>
@@ -248,9 +292,21 @@ const HomePage = () => {
                 '& .MuiTabs-indicator': { backgroundColor: 'red' },
               }}
             >
-              <Tab label="Popular" onMouseEnter={() => fetchTvData(0)} />
-              <Tab label="Top Rated" onMouseEnter={() => fetchTvData(1)} />
-              <Tab label="On The Air" onMouseEnter={() => fetchTvData(2)} />
+              <Tab
+                label="Popular"
+                onMouseEnter={() => fetchTvData(0)}
+                onDoubleClick={() => handleTvTabDoubleClick(0)}
+              />
+              <Tab
+                label="Top Rated"
+                onMouseEnter={() => fetchTvData(1)}
+                onDoubleClick={() => handleTvTabDoubleClick(1)}
+              />
+              <Tab
+                label="On The Air"
+                onMouseEnter={() => fetchTvData(2)}
+                onDoubleClick={() => handleTvTabDoubleClick(2)}
+              />
             </Tabs>
           </Box>
           <Box mt={4}>

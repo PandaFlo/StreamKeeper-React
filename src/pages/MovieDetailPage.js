@@ -93,7 +93,7 @@ function MovieDetailPage() {
             <img
               src={movie?.posterUrl || "placeholder.jpg"} // Display movie poster or a placeholder image
               alt={movie?.title || "Movie Poster"}
-              style={{ width: "100%", borderRadius: "8px" }}
+              style={{ width: "100%", borderRadius: "8px", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.6)'  }}
             />
           </Box>
           {/* Display watch providers */}
@@ -143,11 +143,17 @@ function MovieDetailPage() {
                 </Typography>
                 {/* Display movie rating */}
                 <Rating
-                  name="read-only"
-                  value={movie?.voteAverage / 2 || 0} // Convert 10-point scale to 5-point scale for display
-                  readOnly
-                  precision={0.1}
-                />
+  name="read-only"
+  value={movie?.voteAverage / 2 || 0} // Convert 10-point scale to 5-point scale for display
+  readOnly
+  precision={0.1}
+  sx={{
+    "& .MuiRating-icon": {
+      filter: "drop-shadow(0px 4px 6px rgba(0, 0, 0, 0.6))", // Adding a drop shadow effect
+    },
+  }}
+/>
+
                 <Typography variant="body1" style={{ color: textColor }}>
                   {movie?.voteAverage ? movie.voteAverage.toFixed(1) : "N/A"} / 10
                 </Typography>
@@ -186,6 +192,7 @@ function MovieDetailPage() {
                   width: "100%",
                   borderRadius: "8px",
                   marginTop: "10px",
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.6)' 
                 }}
               />
             </Box>

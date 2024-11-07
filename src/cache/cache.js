@@ -31,16 +31,7 @@ class Cache {
       // Store the value in the cache under the generated key.
       this.cache.set(key, value);
 
-      // Log details about the cache state
-      console.log(`Cached value for key: ${key}`);
-      console.log(`Cache Name: ${this.cacheName}`);
-      console.log(`Storage Location: ${this.storageLocation}`);
-      console.log(`Total Items in Cache: ${this.cache.size}`);
-      console.log('All Cached Items:', JSON.stringify([...this.cache.entries()], null, 2));
     }
-
-    // Print a list of all keys in the cache after every new input
-    console.log('Current list of all keys in the cache:', [...this.cache.keys()]);
   }
 
   // Retrieves a value from the cache using a key generated from the command and query.

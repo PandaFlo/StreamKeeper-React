@@ -1,7 +1,11 @@
+// src/components/MediaDisplayCarousel/MediaDisplayCarousel.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Box, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import StarIcon from '@mui/icons-material/Star';
+import PrefetchService from '../../services/PrefetchService'; // Adjust the path as needed
 
 // Styled component for smooth crossfade transitions between carousel items
 const FadeBox = styled(Box)({
@@ -13,14 +17,14 @@ const FadeBox = styled(Box)({
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   backgroundRepeat: 'no-repeat',
-  transition: 'opacity 1s ease-in-out', // Smooth transition effect
+  transition: 'opacity 1s ease-in-out',
 });
 
 function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, onItemChange }) {
-  const [currentIndex, setCurrentIndex] = useState(0); // Track the index of the currently visible media item
-  const [prevIndex, setPrevIndex] = useState(null); // Track the index of the previous media item (for crossfade)
-  const navigate = useNavigate(); // Navigation hook for routing
-  const timeoutRef = useRef(null); // Ref to manage the autoplay timeout
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(null);
+  const navigate = useNavigate();
+  const timeoutRef = useRef(null);
 
   // Utility function to format image URLs if needed
   const formatImageUrl = (url) => {
@@ -28,18 +32,16 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
     return url && url.startsWith('http') ? url : `${baseUrl}${url}`;
   };
 
-  // Automatically advance the carousel at specified intervals
   useEffect(() => {
     if (autoPlay && mediaItems.length > 0) {
       timeoutRef.current = setInterval(() => {
-        setPrevIndex(currentIndex); // Track the previous index
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaItems.length); // Move to next item, looping around
+        setPrevIndex(currentIndex);
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % mediaItems.length);
       }, interval);
-      return () => clearInterval(timeoutRef.current); // Clear interval on unmount
+      return () => clearInterval(timeoutRef.current);
     }
   }, [autoPlay, interval, mediaItems.length, currentIndex]);
 
-  // Trigger callback whenever the current item changes
   useEffect(() => {
     if (onItemChange && mediaItems[currentIndex]) {
       onItemChange(mediaItems[currentIndex]);
@@ -65,6 +67,21 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
     }
   };
 
+  // Prefetch data on hover using PrefetchService
+  const handleHover = async (media) => {
+    if (media) {
+      try {
+        await PrefetchService.executePrefetch(
+          media.mediaType.charAt(0).toUpperCase() + media.mediaType.slice(1),
+          media.mediaType,
+          media.id
+        );
+      } catch (error) {
+        console.error('Error prefetching data:', error);
+      }
+    }
+  };
+
   // Render individual media item as a carousel slide
   const renderMediaItem = (media, isVisible) => {
     if (!media) return null;
@@ -81,17 +98,17 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
       voteAverage,
     } = media;
 
-    const displayTitle = title || name; // Fallback title
-    const imageUrl = formatImageUrl(backdropUrl || posterUrl); // Use backdrop or poster image
-    const displayDate = mediaType.toLowerCase() === 'movie' ? releaseDate : firstAirDate; // Display date based on media type
-    const rating = voteAverage ? `Rating: ${voteAverage}/10` : 'No rating available';
+    const displayTitle = title || name;
+    const imageUrl = formatImageUrl(backdropUrl || posterUrl);
+    const displayDate = mediaType.toLowerCase() === 'movie' ? releaseDate : firstAirDate;
+    const starCount = Math.floor((voteAverage || 0) / 2);
 
     return (
       <FadeBox
         key={media.id}
         sx={{
-          backgroundImage: `url(${imageUrl})`, // Background image
-          opacity: isVisible ? 1 : 0, // Control visibility with opacity
+          backgroundImage: `url(${imageUrl})`,
+          opacity: isVisible ? 1 : 0,
           zIndex: isVisible ? 1 : 0,
         }}
       >
@@ -103,12 +120,13 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
             width: '100%',
             padding: '20px',
             color: '#fff',
-            background: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background for text
+            background: 'rgba(0, 0, 0, 0.6)',
             cursor: 'pointer',
             boxSizing: 'border-box',
-            borderRadius: '10px', // Rounded corners
+            borderRadius: '10px',
           }}
-          onClick={() => handleNavigation(media)} // Navigate on click
+          onClick={() => handleNavigation(media)}
+          onMouseEnter={() => handleHover(media)} // Prefetch on hover
         >
           <Typography variant="h4" sx={{ wordWrap: 'break-word' }}>
             {displayTitle}
@@ -119,9 +137,11 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
           <Typography variant="body1" sx={{ wordWrap: 'break-word' }}>
             {overview}
           </Typography>
-          <Typography variant="caption" display="block" mt={2}>
-            {rating}
-          </Typography>
+          <Box mt={2} display="flex" alignItems="center">
+            {[...Array(5)].map((_, index) => (
+              <StarIcon key={index} sx={{ color: index < starCount ? '#FFD700' : '#CCC' }} />
+            ))}
+          </Box>
         </Box>
       </FadeBox>
     );
@@ -134,23 +154,24 @@ function MediaDisplayCarousel({ mediaItems, autoPlay = true, interval = 5000, on
         width: '100%',
         height: '70vh',
         overflow: 'hidden',
-        borderRadius: '10px', // Rounded corners for the entire carousel
+        borderRadius: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.6)',
       }}
     >
       {mediaItems.map((media, index) => {
-        const isVisible = index === currentIndex; // Determine if the item is currently visible
-        const wasVisible = index === prevIndex; // Determine if the item was previously visible
-        return renderMediaItem(media, isVisible || wasVisible); // Render visible and transitioning items
+        const isVisible = index === currentIndex;
+        const wasVisible = index === prevIndex;
+        return renderMediaItem(media, isVisible || wasVisible);
       })}
     </Box>
   );
 }
 
 MediaDisplayCarousel.propTypes = {
-  mediaItems: PropTypes.arrayOf(PropTypes.object).isRequired, // Array of media items to display
-  autoPlay: PropTypes.bool, // Whether to autoplay the carousel
-  interval: PropTypes.number, // Interval for autoplay in milliseconds
-  onItemChange: PropTypes.func, // Callback for item change
+  mediaItems: PropTypes.arrayOf(PropTypes.object).isRequired,
+  autoPlay: PropTypes.bool,
+  interval: PropTypes.number,
+  onItemChange: PropTypes.func,
 };
 
 export default MediaDisplayCarousel;

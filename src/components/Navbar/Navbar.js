@@ -7,14 +7,13 @@ import PrefetchService from '../../services/PrefetchService'; // Import Prefetch
 import SearchBar from '../SearchBar/SearchBar'; // Import the SearchBar component
 
 function Navbar() {
-  const navigate = useNavigate(); // Navigation hook for programmatic routing
-  const location = useLocation(); // Access the current location
-  const [showAlerts, setShowAlerts] = useState(false); // State to control the display of alerts
-  const [alertType, setAlertType] = useState(''); // State to manage the type of alert (success or error)
-  const [alertCount, setAlertCount] = useState(0); // State to track the number of alerts
-  const [errorMessages, setErrorMessages] = useState([]); // State to store error messages
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [showAlerts, setShowAlerts] = useState(false);
+  const [alertType, setAlertType] = useState('');
+  const [alertCount, setAlertCount] = useState(0);
+  const [errorMessages, setErrorMessages] = useState([]);
 
-  // Function to handle the click event on the logo or title, checking the health of various services
   const handleTitleClick = async () => {
     try {
       const serviceNames = [
@@ -25,7 +24,6 @@ function Navbar() {
         'TMDB API Key'
       ];
 
-      // Array of service health check promises
       const checks = [
         MainService.checkHealthTMDBService(),
         MainService.checkHealthMovieService(),
@@ -34,10 +32,8 @@ function Navbar() {
         MainService.validateApiKey()
       ];
 
-      // Execute all health checks concurrently and process the results
       const responses = await Promise.allSettled(checks);
 
-      // Identify failed responses and create error messages
       const failedResponses = responses
         .map((res, index) => {
           if (res.status === 'rejected' || !res.value) {
@@ -47,22 +43,19 @@ function Navbar() {
           }
           return null;
         })
-        .filter(Boolean); // Remove null values
+        .filter(Boolean);
 
       if (failedResponses.length === 0) {
-        // If all checks pass
         setAlertType('success');
         setAlertCount(1);
         setErrorMessages([]);
       } else {
-        // If there are failed checks
         setAlertType('error');
         setAlertCount(failedResponses.length);
         setErrorMessages(failedResponses);
       }
-      setShowAlerts(true); // Display alerts
+      setShowAlerts(true);
     } catch (error) {
-      // Handle unexpected errors
       setAlertType('error');
       setAlertCount(1);
       setErrorMessages(['Unexpected error occurred while checking services.']);
@@ -70,7 +63,6 @@ function Navbar() {
     }
   };
 
-  // Automatically hide alerts after a specified timeout
   useEffect(() => {
     let timer;
     if (showAlerts) {
@@ -79,27 +71,38 @@ function Navbar() {
       }, 4000);
     }
     return () => {
-      clearTimeout(timer); // Clear timeout on component unmount
+      clearTimeout(timer);
     };
   }, [showAlerts]);
 
-  // Determine if the search bar should be displayed based on the current path
   const shouldShowSearchBar = location.pathname !== '/' && !location.pathname.includes('search');
-  
+  const shouldShowBrowseButton = location.pathname !== '/browse';
+
+  // New hover handler for prefetching data
+  const handleNavbarHover = () => {
+    PrefetchService.performPrefetch('Home'); // Example prefetch; change 'Home' to your desired page
+  };
+
   return (
     <>
-      {/* AppBar containing the navbar */}
-      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, black, red)' }}>
-        <Toolbar>
-          {/* Logo with click handler for health checks */}
+      <AppBar
+        position="static"
+        sx={{ background: 'linear-gradient(45deg, black, red)', borderRadius: '12px' }}
+      >
+        <Toolbar sx={{ borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.5)' }}> {/* Drop shadow for Toolbar */}
           <img
             src={logo}
             alt="App Logo"
-            style={{ marginRight: 16, width: 150, height: 'auto', cursor: 'pointer' }}
+            style={{
+              marginRight: 16,
+              width: 150,
+              height: 'auto',
+              cursor: 'pointer',
+              borderRadius: '8px'
+            }}
             onClick={handleTitleClick}
           />
           <div style={{ flexGrow: 1 }}>
-            {/* Conditional title rendering based on the current path */}
             {location.pathname !== '/' && (
               <Typography
                 variant="h6"
@@ -107,26 +110,35 @@ function Navbar() {
                   display: 'inline-block',
                   cursor: 'pointer',
                   color: 'white',
+                  padding: '4px 8px',
+                  borderRadius: '12px'
                 }}
-                onClick={() => navigate('/')} // Navigate to the homepage on click
+                onMouseEnter={handleNavbarHover}
+                onClick={() => navigate('/')}
               >
                 Stream Keeper
               </Typography>
             )}
           </div>
-          {/* Render the SearchBar component conditionally */}
           {shouldShowSearchBar && <SearchBar />}
-          <Button
-            color="inherit"
-            component={Link}
-            to="/browse" // Navigate to browse page
-            onMouseEnter={() => PrefetchService.executePrefetch('Browse')} // Prefetch on hover
-          >
-            Browse
-          </Button>
+          {shouldShowBrowseButton && (
+            <Button
+              color="inherit"
+              component={Link}
+              to="/browse"
+              sx={{
+                borderRadius: '12px',
+                '&:hover': {
+                  backgroundColor: 'inherit' // No hover background color change
+                },
+                transition: 'none' // No hover animation
+              }}
+            >
+              Browse
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
-      {/* Display alerts if any */}
       {showAlerts && (
         <Box
           sx={{
@@ -139,15 +151,13 @@ function Navbar() {
             gap: 1,
           }}
         >
-          {/* Success alert */}
           {alertType === 'success' ? (
-            <Alert variant="filled" severity="success">
+            <Alert variant="filled" severity="success" sx={{ borderRadius: '8px' }}>
               Success! All services are healthy.
             </Alert>
           ) : (
-            // Display each error message as an individual alert
             errorMessages.map((message, index) => (
-              <Alert key={index} variant="filled" severity="error">
+              <Alert key={index} variant="filled" severity="error" sx={{ borderRadius: '8px' }}>
                 {message}
               </Alert>
             ))

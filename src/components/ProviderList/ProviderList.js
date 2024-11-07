@@ -55,120 +55,57 @@ function ProviderList({ mediaId, mediaType }) {
   // Return null if no watch providers are found
   if (!watchProviders) return null;
 
+  // Define provider categories to render dynamically
+  const providerCategories = [
+    { key: 'flatrate', label: 'Stream' },
+    { key: 'rent', label: 'Rent' },
+    { key: 'buy', label: 'Buy' },
+    { key: 'ads', label: 'Watch with Ads' },
+  ];
+
   return (
     <Box mt={2}>
       <Typography variant="h6">Where to Watch</Typography>
-
-      {/* Render streaming providers */}
-      {watchProviders.flatrate && watchProviders.flatrate.length > 0 && (
-        <Box mt={1}>
-          <Typography variant="subtitle1">Stream</Typography>
-          <Box display="flex" flexWrap="wrap" gap={1}>
-            {watchProviders.flatrate.map((provider) => (
-              <Chip
-                key={provider.provider_id} // Unique key for each provider
-                label={provider.provider_name} // Display provider name
-                avatar={
-                  provider.logo_path ? ( // Display provider logo if available
-                    <Avatar src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`} />
-                  ) : (
-                    <Avatar>{provider.provider_name[0]}</Avatar> // Fallback to first letter of provider name
-                  )
-                }
-                sx={{ backgroundColor: 'white' }}
-                component="a" // Render as a link
-                href={watchProviders.link} // Link to the provider's page
-                target="_blank"
-                rel="noopener noreferrer"
-                clickable
-              />
-            ))}
-          </Box>
-        </Box>
-      )}
-
-      {/* Render providers offering rentals */}
-      {watchProviders.rent && watchProviders.rent.length > 0 && (
-        <Box mt={1}>
-          <Typography variant="subtitle1">Rent</Typography>
-          <Box display="flex" flexWrap="wrap" gap={1}>
-            {watchProviders.rent.map((provider) => (
-              <Chip
-                key={provider.provider_id}
-                label={provider.provider_name}
-                avatar={
-                  provider.logo_path ? (
-                    <Avatar src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`} />
-                  ) : (
-                    <Avatar>{provider.provider_name[0]}</Avatar>
-                  )
-                }
-                sx={{ backgroundColor: 'white' }}
-                component="a"
-                href={watchProviders.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                clickable
-              />
-            ))}
-          </Box>
-        </Box>
-      )}
-
-      {/* Render providers offering purchases */}
-      {watchProviders.buy && watchProviders.buy.length > 0 && (
-        <Box mt={1}>
-          <Typography variant="subtitle1">Buy</Typography>
-          <Box display="flex" flexWrap="wrap" gap={1}>
-            {watchProviders.buy.map((provider) => (
-              <Chip
-                key={provider.provider_id}
-                label={provider.provider_name}
-                avatar={
-                  provider.logo_path ? (
-                    <Avatar src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`} />
-                  ) : (
-                    <Avatar>{provider.provider_name[0]}</Avatar>
-                  )
-                }
-                sx={{ backgroundColor: 'white' }}
-                component="a"
-                href={watchProviders.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                clickable
-              />
-            ))}
-          </Box>
-        </Box>
-      )}
-
-      {/* Render providers offering ad-supported viewing */}
-      {watchProviders.ads && watchProviders.ads.length > 0 && (
-        <Box mt={1}>
-          <Typography variant="subtitle1">Watch with Ads</Typography>
-          <Box display="flex" flexWrap="wrap" gap={1}>
-            {watchProviders.ads.map((provider) => (
-              <Chip
-                key={provider.provider_id}
-                label={provider.provider_name}
-                avatar={
-                  provider.logo_path ? (
-                    <Avatar src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`} />
-                  ) : (
-                    <Avatar>{provider.provider_name[0]}</Avatar>
-                  )
-                }
-                sx={{ backgroundColor: 'white' }}
-                component="a"
-                href={watchProviders.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                clickable
-              />
-            ))}
-          </Box>
-        </Box>
+      {providerCategories.map(
+        (category) =>
+          watchProviders[category.key] && watchProviders[category.key].length > 0 && (
+            <Box mt={1} key={category.key}>
+              <Typography variant="subtitle1">{category.label}</Typography>
+              <Box display="flex" flexWrap="wrap" gap={1}>
+                {watchProviders[category.key].map((provider) => (
+                  <Chip
+                    key={provider.provider_id} // Unique key for each provider
+                    label={provider.provider_name} // Display provider name
+                    avatar={
+                      provider.logo_path ? ( // Display provider logo if available
+                        <Avatar src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`} />
+                      ) : (
+                        <Avatar>{provider.provider_name[0]}</Avatar> // Fallback to first letter of provider name
+                      )
+                    }
+                    sx={{
+                      backgroundColor: '#D3D3D3', // Pre-hover color (off-white)
+                      color: '#000000', // Text color
+                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.6)' ,
+                      transition: 'all 0.3s ease-in-out',
+                      '&:hover': {
+                        backgroundColor: 'white', // Hover color
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)', // Drop shadow on hover
+                        transform: 'translateY(-2px) scale(.95)', // Slight elevation
+                         
+                        
+                      },
+                    }}
+                    component="a" // Render as a link
+                    href={watchProviders.link} // Link to the provider's page
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    clickable
+                  />
+                ))}
+              </Box>
+            </Box>
+          )
       )}
     </Box>
   );

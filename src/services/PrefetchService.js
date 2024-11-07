@@ -55,6 +55,22 @@ class PrefetchService {
     // Await the promise before returning
     await fetchPromise;
   }
+  async prefetchPopularPersonImages() {
+    try {
+      const popularPersons = await MainService.getPopularPersons(); // Assuming this method exists to get popular persons
+        // Loop through each person and call getPersonImages
+        for (const person of popularPersons) {
+          try {
+            await MainService.getPersonImages(person.id); // The only goal is to run this method
+          } catch (personError) {
+            console.error(`Error fetching images for person ${person.id}:`, personError);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching popular persons:', error
+      );
+    }    
+  }
 
   // Perform prefetch operations based on the page type
   async performPrefetch(pagename, id) {
@@ -97,6 +113,7 @@ class PrefetchService {
     await MainService.getAiringTodayTvShows();
     await MainService.getOnTheAirTvShows();
     await MainService.getTopRatedTvShows();
+    instance.prefetchPopularPersonImages();
   }
 
   // Fetch data for the 'Home' page
@@ -132,6 +149,12 @@ class PrefetchService {
     await MainService.getSimilarMovies(id);
     await MainService.getMovieWatchProviders(id);
   }
+
+
+
+
+
+  
 }
 
 const instance = new PrefetchService();

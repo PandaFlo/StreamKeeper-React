@@ -86,7 +86,11 @@ function TvShowDetailPage() {
             <img
               src={tvShow?.posterUrl || 'placeholder.jpg'} // Display TV show poster or placeholder image
               alt={tvShow?.name || 'TV Show Poster'}
-              style={{ width: '100%', borderRadius: '8px' }}
+              style={{ 
+                width: '100%', 
+                borderRadius: '8px',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.6)' // Drop shadow added here
+              }}
             />
           </Box>
           {/* Display watch providers */}
@@ -163,7 +167,12 @@ function TvShowDetailPage() {
               <img
                 src={tvShow.backdropUrl}
                 alt={`${tvShow.name} backdrop`}
-                style={{ width: '100%', borderRadius: '8px', marginTop: '10px' }}
+                style={{ 
+                  width: '100%', 
+                  borderRadius: '8px', 
+                  marginTop: '10px',
+                  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.6)' // Drop shadow added here
+                }}
               />
             </Box>
           )}

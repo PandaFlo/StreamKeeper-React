@@ -101,8 +101,13 @@ function DisplayCardB({
         cursor: cardStyles.cursor,
         flexGrow: 1,
         position: 'relative',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.25)', // Added drop shadow
+        borderRadius: 1,
         '&:hover': {
-          boxShadow: disableClick ? 'none' : '0px 4px 12px rgba(0, 0, 0, 0.4)',
+          transform: disableClick ? 'none' : 'translate(-4px, -8px)',
+          transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out', // Added transition
+          boxShadow: disableClick ? 'none' : '0px 12px 24px rgba(0, 0, 0, 0.4)', // Increased shadow on hover
+          borderRadius: 3,
         },
       }}
     >
@@ -123,6 +128,7 @@ function DisplayCardB({
             flexDirection: 'column',
             height: 'auto',
             width: '100%',
+            borderRadius: 1,
           }}
         >
           <CardMedia
