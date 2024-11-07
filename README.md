@@ -51,77 +51,75 @@ The project structure is meticulously organized to promote maintainability, read
 
 ```
 streamkeeper-react/
-├── node_modules/                    # Directory for npm packages
-├── public/                           # Publicly accessible files
-│   ├── Logo.png                     # Logo image
-│   └── index.html                   # Main HTML file
-├── src/                              # Source files for the React application
-│   ├── cache/                        # Caching mechanism for API responses
-│   │   └── cache.js                  # Cache implementation
-│   ├── components/                   # Reusable React components
-│   │   ├── BrowseCard/               # BrowseCard component directory
-│   │   │   ├── BrowseCard.js         # BrowseCard component logic
-│   │   │   ├── BrowseCard.styled.js  # Styled components for BrowseCard
-│   │   │   └── BrowseCard.test.js    # Tests for BrowseCard component
-│   │   ├── DisplayCardA/             # DisplayCardA component directory
-│   │   │   ├── DisplayCardA.js       # DisplayCardA component logic
-│   │   │   ├── DisplayCardA.styled.js# Styled components for DisplayCardA
-│   │   │   └── DisplayCardA.test.js  # Tests for DisplayCardA component
-│   │   ├── DisplayCardB/             # DisplayCardB component directory
-│   │   │   ├── DisplayCardB.js       # DisplayCardB component logic
-│   │   │   ├── DisplayCardB.styled.js# Styled components for DisplayCardB
-│   │   │   └── DisplayCardB.test.js  # Tests for DisplayCardB component
-│   │   ├── DisplayCardCarousel/      # DisplayCardCarousel component directory
-│   │   │   ├── DisplayCardCarousel.js # DisplayCardCarousel component logic
-│   │   │   ├── DisplayCardCarousel.styled.js # Styled components for DisplayCardCarousel
-│   │   │   └── DisplayCardCarousel.test.js  # Tests for DisplayCardCarousel component
-│   │   ├── MediaDisplayCarousel/      # MediaDisplayCarousel component directory
-│   │   │   ├── MediaDisplayCarousel.js # MediaDisplayCarousel component logic
-│   │   │   ├── MediaDisplayCarousel.styled.js # Styled components for MediaDisplayCarousel
-│   │   │   └── MediaDisplayCarousel.test.js # Tests for MediaDisplayCarousel component
-│   │   ├── Navbar/                    # Navbar component directory
-│   │   │   ├── Navbar.js              # Navbar component logic
-│   │   │   ├── Navbar.styled.js       # Styled components for Navbar
-│   │   │   └── Navbar.test.js         # Tests for Navbar component
-│   │   ├── ProviderList/              # ProviderList component directory
-│   │   │   ├── ProviderList.js        # ProviderList component logic
-│   │   │   ├── ProviderList.styled.js # Styled components for ProviderList
-│   │   │   └── ProviderList.test.js   # Tests for ProviderList component
-│   │   └── SearchBar/                 # SearchBar component directory
-│   │       ├── SearchBar.js           # SearchBar component logic
-│   │       ├── SearchBar.styled.js    # Styled components for SearchBar
-│   │       └── SearchBar.test.js      # Tests for SearchBar component
-│   ├── images/                        # Directory for image assets
-│   ├── models/                        # Data models representing different entities
-│   │   ├── Card.js                    # Card model
-│   │   ├── Media.js                   # Media model
-│   │   ├── Movie.js                   # Movie model
-│   │   ├── Person.js                  # Person model
-│   │   └── TVShow.js                  # TV Show model
-│   ├── pages/                         # Page components for routing
-│   │   ├── BrowsePage.js              # BrowsePage component
-│   │   ├── HomePage.js                # HomePage component
-│   │   ├── InfoDisplayPage.js         # InfoDisplayPage component
-│   │   ├── MovieDetailPage.js         # MovieDetailPage component
-│   │   ├── PersonDetailPage.js        # PersonDetailPage component
-│   │   ├── SearchResultsPage.js       # SearchResultsPage component
-│   │   └── TvShowDetailPage.js        # TvShowDetailPage component
-│   ├── services/                      # API service files
-│   │   ├── MainService.js             # Main service for API calls
-│   │   ├── MovieService.js            # Service for movie-related API calls
-│   │   ├── PersonService.js           # Service for person-related API calls
-│   │   ├── PrefetchService.js          # Service for pre-fetching data
-│   │   └── TvShowService.js           # Service for TV show-related API calls
-│   ├── App.css                        # Main application styles
-│   ├── App.js                         # Main application component
-│   ├── index.js                       # Entry point of the application
-│   └── reportWebVitals.js             # Web vitals reporting
-├── .gitignore                         # Specifies files to ignore in Git
-├── package-lock.json                  # Lock
-
- file for npm packages
-├── package.json                       # Project metadata and dependencies
-└── README.md                          # Project documentation
+├── node_modules/                                    # Directory for npm packages
+├── public/                                          # Publicly accessible files
+│   ├── Logo.png                                     # Logo image
+│   └── index.html                                   # Main HTML file
+├── src/                                             # Source files for the React application
+│   ├── cache/                                       # Caching mechanism for API responses
+│   │   └── cache.js                                 # Cache implementation
+│   ├── components/                                  # Reusable React components
+│   │   ├── BrowseCard/                              # BrowseCard component directory
+│   │   │   ├── BrowseCard.js                        # BrowseCard component logic
+│   │   │   ├── BrowseCard.styled.js                 # Styled components for BrowseCard
+│   │   │   └── BrowseCard.test.js                   # Tests for BrowseCard component
+│   │   ├── DisplayCardA/                            # DisplayCardA component directory
+│   │   │   ├── DisplayCardA.js                      # DisplayCardA component logic
+│   │   │   ├── DisplayCardA.styled.js               # Styled components for DisplayCardA
+│   │   │   └── DisplayCardA.test.js                 # Tests for DisplayCardA component
+│   │   ├── DisplayCardB/                            # DisplayCardB component directory
+│   │   │   ├── DisplayCardB.js                      # DisplayCardB component logic
+│   │   │   ├── DisplayCardB.styled.js               # Styled components for DisplayCardB
+│   │   │   └── DisplayCardB.test.js                 # Tests for DisplayCardB component
+│   │   ├── DisplayCardCarousel/                     # DisplayCardCarousel component directory
+│   │   │   ├── DisplayCardCarousel.js               # DisplayCardCarousel component logic
+│   │   │   ├── DisplayCardCarousel.styled.js        # Styled components for DisplayCardCarousel
+│   │   │   └── DisplayCardCarousel.test.js          # Tests for DisplayCardCarousel component
+│   │   ├── MediaDisplayCarousel/                    # MediaDisplayCarousel component directory
+│   │   │   ├── MediaDisplayCarousel.js              # MediaDisplayCarousel component logic
+│   │   │   ├── MediaDisplayCarousel.styled.js       # Styled components for MediaDisplayCarousel
+│   │   │   └── MediaDisplayCarousel.test.js         # Tests for MediaDisplayCarousel component
+│   │   ├── Navbar/                                  # Navbar component directory
+│   │   │   ├── Navbar.js                            # Navbar component logic
+│   │   │   ├── Navbar.styled.js                     # Styled components for Navbar
+│   │   │   └── Navbar.test.js                       # Tests for Navbar component
+│   │   ├── ProviderList/                            # ProviderList component directory
+│   │   │   ├── ProviderList.js                      # ProviderList component logic
+│   │   │   ├── ProviderList.styled.js               # Styled components for ProviderList
+│   │   │   └── ProviderList.test.js                 # Tests for ProviderList component
+│   │   └── SearchBar/                               # SearchBar component directory
+│   │       ├── SearchBar.js                         # SearchBar component logic
+│   │       ├── SearchBar.styled.js                  # Styled components for SearchBar
+│   │       └── SearchBar.test.js                    # Tests for SearchBar component
+│   ├── images/                                      # Directory for image assets
+│   ├── models/                                      # Data models representing different entities
+│   │   ├── Card.js                                  # Card model
+│   │   ├── Media.js                                 # Media model
+│   │   ├── Movie.js                                 # Movie model
+│   │   ├── Person.js                                # Person model
+│   │   └── TVShow.js                                # TV Show model
+│   ├── pages/                                       # Page components for routing
+│   │   ├── BrowsePage.js                            # BrowsePage component
+│   │   ├── HomePage.js                              # HomePage component
+│   │   ├── InfoDisplayPage.js                       # InfoDisplayPage component
+│   │   ├── MovieDetailPage.js                       # MovieDetailPage component
+│   │   ├── PersonDetailPage.js                      # PersonDetailPage component
+│   │   ├── SearchResultsPage.js                     # SearchResultsPage component
+│   │   └── TvShowDetailPage.js                      # TvShowDetailPage component
+│   ├── services/                                    # API service files
+│   │   ├── MainService.js                           # Main service for API calls
+│   │   ├── MovieService.js                          # Service for movie-related API calls
+│   │   ├── PersonService.js                         # Service for person-related API calls
+│   │   ├── PrefetchService.js                       # Service for pre-fetching data
+│   │   └── TvShowService.js                         # Service for TV show-related API calls
+│   ├── App.css                                      # Main application styles
+│   ├── App.js                                       # Main application component
+│   ├── index.js                                     # Entry point of the application
+│   └── reportWebVitals.js                           # Web vitals reporting
+├── .gitignore                                       # Specifies files to ignore in Git
+├── package-lock.json                                # Lock file for npm packages
+├── package.json                                     # Project metadata and dependencies
+└── README.md                                        # Project documentation
 
 ## Getting Started
 
@@ -133,7 +131,7 @@ Make sure you have the following installed:
 
 - Node.js (version X.X.X or higher)
 - npm (Node Package Manager)
-
+ ```
 ### Installation
 
 1. **Clone the repository**:
